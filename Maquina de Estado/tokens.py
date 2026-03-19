@@ -12,7 +12,7 @@ class TokenType(Enum):
     ERRO = "ERRO"
     EOF = "EOF"          
 
-@dataclass
+@dataclass # Armazenar informações sobre os tokens identificados
 class Token:
     tipo: TokenType
     valor: str
