@@ -1,5 +1,3 @@
-# Regras de transição da máquina de estados para o lexer do analisador léxico da calculadora científica
-
 from tokens import TokenType
 
 def estadoInicial(ctx):
@@ -8,22 +6,16 @@ def estadoInicial(ctx):
     if char == "" or char is None:
         return None
 
-    # Ignora espaços em branco
     if char.isspace():
         ctx.avancar()
         return estadoInicial
 
     if char in "()":
-        ctx.adicionar_token(TokenType.PARENTESES, char)
-        ctx.avancar()
-        return estadoInicial
+        return estadoParenteses
 
     if char in "+-*%^":
-        ctx.adicionar_token(TokenType.OPERADOR, char)
-        ctx.avancar()
-        return estadoInicial
+        return estadoOperador
 
-    # Operador de divisão (/ ou //)
     if char == "/":
         ctx.buffer += char
         ctx.avancar()
@@ -45,6 +37,25 @@ def estadoInicial(ctx):
     ctx.buffer += char
     ctx.avancar()
     return estadoErro
+
+def estadoParenteses(ctx):
+    char = ctx.char_atual()
+
+    ctx.adicionar_token(TokenType.PARENTESES, char)
+    ctx.avancar()
+    return estadoInicial
+
+def estadoOperador(ctx):
+    char = ctx.char_atual()
+
+    if char in "+-*%^/":
+        ctx.adicionar_token(TokenType.OPERADOR, char)
+        ctx.avancar()
+        return estadoInicial
+    else:
+        ctx.buffer += char
+        ctx.avancar()
+        return estadoErro
 
 def estadoNumero(ctx):
     char = ctx.char_atual()
